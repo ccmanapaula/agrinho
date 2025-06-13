@@ -22,6 +22,8 @@ function draw() {
     playGame();
   } else if (gameState === "end") {
     showGameOver();
+  } else if (gameState === "instructions") {
+    showInstructions();
   }
 }
 
@@ -31,13 +33,33 @@ function showMenu() {
   text("Expresso da União", width / 2, height / 2 - 40);
   textSize(18);
   text("Clique para começar", width / 2, height / 2);
+  text("Pressione 'H' para instruções", width / 2, height / 2 + 30);
+}
+
+function showInstructions() {
+  background(240);
+  fill(0);
+  textSize(24);
+  text("Como Jogar", width / 2, 40);
+
+  textSize(16);
+  text("🚂 Controle o trem e colete os itens:", width / 2, 90);
+  text("- Itens 'Campo' e 'Cidade' dão pontos.", width / 2, 115);
+  text("- Desvie de obstáculos como 'Pedra', 'Carro' e 'Boi'.", width / 2, 140);
+
+  text("🎮 Controles:", width / 2, 190);
+  text("← Seta Esquerda: mover para trilho da esquerda", width / 2, 215);
+  text("→ Seta Direita: mover para trilho da direita", width / 2, 240);
+  text("🖱 Clique do mouse: iniciar ou reiniciar o jogo", width / 2, 265);
+
+  textSize(14);
+  text("Pressione qualquer tecla para voltar ao menu", width / 2, height - 30);
 }
 
 function playGame() {
   drawTracks();
   train.display();
 
-  // Atualizar e exibir itens
   for (let i = items.length - 1; i >= 0; i--) {
     items[i].update();
     items[i].display();
@@ -50,7 +72,6 @@ function playGame() {
     }
   }
 
-  // Obstáculos
   for (let i = obstacles.length - 1; i >= 0; i--) {
     obstacles[i].update();
     obstacles[i].display();
@@ -62,7 +83,6 @@ function playGame() {
     }
   }
 
-  // Adiciona itens e obstáculos
   if (frameCount % 60 === 0) {
     if (random(1) < 0.6) {
       items.push(new Item());
@@ -71,13 +91,11 @@ function playGame() {
     }
   }
 
-  // HUD
   fill(0);
   textSize(18);
   text(`Pontuação: ${score}`, 70, 20);
   text(`Velocidade: ${speed.toFixed(1)}`, width - 100, 20);
 
-  // Aumenta a dificuldade
   if (frameCount % 300 === 0) {
     speed += 0.2;
   }
@@ -92,10 +110,18 @@ function drawTracks() {
 }
 
 function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    train.move(-1);
-  } else if (keyCode === RIGHT_ARROW) {
-    train.move(1);
+  if (gameState === "play") {
+    if (keyCode === LEFT_ARROW) {
+      train.move(-1);
+    } else if (keyCode === RIGHT_ARROW) {
+      train.move(1);
+    }
+  }
+
+  if (gameState === "menu" && key === 'h' || key === 'H') {
+    gameState = "instructions";
+  } else if (gameState === "instructions") {
+    gameState = "menu";
   }
 }
 
